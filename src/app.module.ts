@@ -6,6 +6,9 @@ import { join } from 'path';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import * as joi from 'joi';
 import { Restaurant } from './restaurant/entities/restaurant.entity';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
+import { User } from './users/entities/user.entity';
 
 let envFilePath;
 if (process.env.NODE_ENV == 'development') {
@@ -39,7 +42,7 @@ if (process.env.NODE_ENV == 'development') {
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Restaurant],
+      entities: [User, Restaurant],
       synchronize: true,
       logging: true,
     }),
@@ -48,6 +51,8 @@ if (process.env.NODE_ENV == 'development') {
       // autoSchemaFile: true,
     }),
     RestaurantModule,
+    UsersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

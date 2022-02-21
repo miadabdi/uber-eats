@@ -8,13 +8,29 @@ type Restaurant {
   isVegan: Boolean!
   owner: String!
   address: String!
+  categoryName: String!
+}
+
+type User {
+  email: String!
+  password: String!
+  role: RoleEnum!
+}
+
+enum RoleEnum {
+  CLIENT
+  OWNER
+  DELIVERY
 }
 
 type Query {
-  myRestaurant: Restaurant!
-  restaurants(veganOnly: Boolean!): [Restaurant!]!
+  restaurants: [Restaurant!]!
+  users: [User!]!
 }
 
 type Mutation {
-  createRestaurant(name: String!, isVegan: Boolean!, owner: String!, address: String!): Restaurant!
+  createRestaurant(name: String!, isVegan: Boolean = true, owner: String!, address: String!, categoryName: String!): Restaurant!
+  updateRestaurant(name: String, isVegan: Boolean = true, owner: String, address: String, categoryName: String, id: Float): Restaurant!
+  createAccount(email: String!, password: String!, role: RoleEnum!): User!
+  login(email: String!, password: String!): User!
 }
