@@ -1,29 +1,11 @@
-import {
-  createParamDecorator,
-  ExecutionContext,
-  Inject,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  GqlExecutionContext,
-} from '@nestjs/graphql';
+import { Inject, UseGuards } from '@nestjs/common';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { GetUser } from './decorators/get-user.decorator';
 import { CreateAccountDto } from './dtos/create-account.dto';
 import { AccessToken, LoginDto } from './dtos/login.dto';
 import { User } from './entities/user.entity';
 import { GqlAuthGuard } from './guards/jwt.guard';
 import { UsersService } from './users.service';
-
-export const GetUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const gqlCtx = GqlExecutionContext.create(ctx);
-    const request = gqlCtx.getContext().req;
-    return request.user;
-  },
-);
 
 @Resolver((of) => User)
 export class UsersResolver {

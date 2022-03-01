@@ -7,7 +7,7 @@ import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthenticationError } from 'apollo-server-express';
 
-export type PayloadType = { userId: number };
+export type PayloadType = { userId: number; iat?: number; exp?: number };
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,8 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: PayloadType) {
-    console.log('Reached validate');
-
     const user = await this.userRepository.findOne(payload.userId);
     if (!user) {
       throw new AuthenticationError('User for this token is deleted');
