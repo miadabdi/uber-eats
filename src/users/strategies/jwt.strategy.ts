@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
+import { AuthenticationError } from 'apollo-server-express';
 
 export type PayloadType = { userId: number };
 
@@ -27,6 +28,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log('Reached validate');
 
     const user = await this.userRepository.findOne(payload.userId);
+    if (!user) {
+      throw new AuthenticationError('User for this token is deleted');
+    }
+
     return user;
   }
 }

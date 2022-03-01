@@ -1,10 +1,29 @@
-import { Inject, Request, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  Inject,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  GqlExecutionContext,
+} from '@nestjs/graphql';
 import { CreateAccountDto } from './dtos/create-account.dto';
 import { AccessToken, LoginDto } from './dtos/login.dto';
 import { User } from './entities/user.entity';
-import { JwtAuthGuard } from './guards/jwt.guard';
+import { GqlAuthGuard } from './guards/jwt.guard';
 import { UsersService } from './users.service';
+
+export const GetUser = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const gqlCtx = GqlExecutionContext.create(ctx);
+    const request = gqlCtx.getContext().req;
+    return request.user;
+  },
+);
 
 @Resolver((of) => User)
 export class UsersResolver {
@@ -28,11 +47,9 @@ export class UsersResolver {
     return this.usersService.login(loginDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(GqlAuthGuard)
   @Query((returns) => User)
-  me(@Request() req): User {
-    console.log('Reached resolver');
-
-    return req.user;
+  me(@GetUser() user: User): User {
+    return user;
   }
 }
