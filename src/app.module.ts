@@ -33,6 +33,7 @@ if (process.env.NODE_ENV == 'development') {
         DB_PASSWORD: joi.string().required(),
         DB_DATABASE: joi.string().required(),
         DB_PORT: joi.string().required(),
+        JWT_SECRET: joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({

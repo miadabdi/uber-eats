@@ -23,14 +23,19 @@ enum RoleEnum {
   DELIVERY
 }
 
+type AccessToken {
+  access_token: String!
+}
+
 type Query {
   restaurants: [Restaurant!]!
   users: [User!]!
+  me: User!
 }
 
 type Mutation {
   createRestaurant(name: String!, isVegan: Boolean = true, owner: String!, address: String!, categoryName: String!): Restaurant!
   updateRestaurant(name: String, isVegan: Boolean = true, owner: String, address: String, categoryName: String, id: Float): Restaurant!
   createAccount(email: String!, password: String!, role: RoleEnum!): User!
-  login(email: String!, password: String!): User!
+  login(email: String!, password: String!): AccessToken!
 }

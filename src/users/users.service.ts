@@ -1,21 +1,25 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
 import { Repository } from 'typeorm';
 import { CreateAccountDto } from './dtos/create-account.dto';
-import { LoginDto } from './dtos/login.dto';
+import { AccessToken, LoginDto } from './dtos/login.dto';
 import { User } from './entities/user.entity';
+import { PayloadType } from './strategies/jwt.strategy';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(JwtService)
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto): Promise<User> {
@@ -31,7 +35,7 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async login(loginDto: LoginDto): Promise<User> {
+  async login(loginDto: LoginDto): Promise<AccessToken> {
     const user = await this.userRepository.findOne({ email: loginDto.email });
 
     if (!user) {
@@ -43,6 +47,9 @@ export class UsersService {
       throw new UnauthorizedException('Password is not correct');
     }
 
-    return user;
+    const payload: PayloadType = { userId: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
