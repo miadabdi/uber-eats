@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
@@ -9,6 +9,8 @@ import { Restaurant } from './restaurant/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { Verification } from './users/entities/verification.entity';
+import { MailModule } from './mail/mail.module';
 
 let envFilePath;
 if (process.env.NODE_ENV == 'development') {
@@ -34,18 +36,28 @@ if (process.env.NODE_ENV == 'development') {
         DB_DATABASE: joi.string().required(),
         DB_PORT: joi.string().required(),
         JWT_SECRET: joi.string().required(),
+        SMTP_HOST: joi.string().required(),
+        SMTP_PORT: joi.number().required(),
+        SMTP_USERNAME: joi.string().required(),
+        SMTP_PASSWORD: joi.string().required(),
+        SMTP_FROM: joi.string().required(),
+        SMTP_FROM_NAME: joi.string().required(),
       }),
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [User, Restaurant],
-      synchronize: true,
-      logging: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: Number(configService.get<string>('DB_PORT')),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [User, Restaurant, Verification],
+        synchronize: true,
+        logging: true,
+      }),
+      inject: [ConfigService],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -54,6 +66,7 @@ if (process.env.NODE_ENV == 'development') {
     RestaurantModule,
     UsersModule,
     CommonModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

@@ -7,10 +7,11 @@ import { UsersResolver } from './users.resolver';
 import { UsersService } from './users.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { Verification } from './entities/verification.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Verification]),
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

@@ -12,9 +12,11 @@ type Restaurant {
 }
 
 type User {
+  name: String!
   email: String!
-  password: String!
+  password: String
   role: RoleEnum!
+  verified: Boolean!
 }
 
 enum RoleEnum {
@@ -27,15 +29,21 @@ type AccessToken {
   access_token: String!
 }
 
+type VerifyEmailOutput {
+  message: String!
+}
+
 type Query {
   restaurants: [Restaurant!]!
-  users: [User!]!
   me: User!
+  user(userId: Float!): User!
 }
 
 type Mutation {
   createRestaurant(name: String!, isVegan: Boolean = true, owner: String!, address: String!, categoryName: String!): Restaurant!
   updateRestaurant(name: String, isVegan: Boolean = true, owner: String, address: String, categoryName: String, id: Float): Restaurant!
-  createAccount(email: String!, password: String!, role: RoleEnum!): User!
-  login(email: String!, password: String!): AccessToken!
+  createAccount(name: String!, email: String!, password: String, role: RoleEnum!): User!
+  login(email: String!, password: String): AccessToken!
+  editProfile(name: String, email: String, password: String): User!
+  verifyEmail(code: String!): VerifyEmailOutput!
 }

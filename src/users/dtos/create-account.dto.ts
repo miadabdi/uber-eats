@@ -4,6 +4,6 @@ import { User } from '../entities/user.entity';
 @ArgsType()
 export class CreateAccountDto extends PickType(
   User,
-  ['email', 'password', 'role'] as const,
+  ['email', 'password', 'role', 'name'] as const,
   ArgsType,
 ) {}
